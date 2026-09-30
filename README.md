@@ -11,4 +11,4 @@ Sitio publicado con GitHub Pages: **https://jakhg.github.io/Shinkaku-SystemShare
 2. Agrega una tarjeta en `index.html` de la raíz.
 3. Haz commit y push a `main`: GitHub Pages lo publica en 1–2 minutos.
 
-**Importante:** este repositorio es **público**. Aquí va sólo material para mostrar, nunca CAD, STEP, código fuente del ESP32 ni documentos internos. Eso queda en el repo privado del proyecto.
+**Importante:** este repositorio es **público**. Aquí va sólo material para mostrar, nunca CAD, STEP, código fuente del ESP32 ni documentos internos. Eso queda en el repo del proyecto (`shinkaku-systems`, que conviene dejar privado).
