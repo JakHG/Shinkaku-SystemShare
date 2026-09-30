@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shinkaku Systems</title>
+<meta name="description" content="Demos y material compartido de Shinkaku Systems: maquetas didácticas de procesos industriales.">
+<meta property="og:title" content="Shinkaku Systems">
+<meta property="og:description" content="Maquetas didácticas funcionales: chancado, molienda y flotación en 3D.">
+<meta property="og:image" content="https://jakhg.github.io/shinkaku-share/demo-web/assets/fl01_hero.jpg">
+<link rel="icon" href="assets/logo_mark.png">
+<style>
+:root{color-scheme:dark;--bg:#060d16;--card:#0e1d2f;--line:#1b3452;--ink:#e8f0fa;--mute:#8fa6c2;--blue:#016DC0;--blue2:#3d9bff}
+*{box-sizing:border-box;margin:0}
+body{background:radial-gradient(circle at 80% 0%,rgba(1,109,192,.25),transparent 50%),var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;min-height:100vh;padding:48px 16px}
+main{max-width:860px;margin:0 auto}
+header img{height:78px}
+h1{font-size:26px;margin:28px 0 6px}
+p.sub{color:var(--mute)}
+.list{display:grid;gap:14px;margin-top:30px}
+a.item{display:grid;grid-template-columns:180px 1fr;gap:18px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;transition:.2s}
+a.item:hover{border-color:var(--blue2);transform:translateY(-2px)}
+a.item img{width:100%;height:120px;object-fit:cover}
+a.item div{padding:14px 16px 14px 0}
+a.item b{font-size:18px}
+a.item span{display:block;color:var(--mute);font-size:14px}
+a.item em{font:12px ui-monospace,Consolas,monospace;color:var(--blue2);font-style:normal}
+footer{margin-top:40px;color:var(--mute);font-size:13px}
+@media(max-width:560px){a.item{grid-template-columns:1fr}a.item div{padding:0 16px 16px}}
+</style>
+</head>
+<body>
+<main>
+  <header><img src="assets/logo_dark.png" alt="Shinkaku Systems 新核システムズ"></header>
+  <h1>Material compartido</h1>
+  <p class="sub">Demos y avances de las maquetas didácticas industriales de Shinkaku Systems.</p>
+  <div class="list">
+    <a class="item" href="demo-web/">
+      <img src="demo-web/assets/fl01_hero.jpg" alt="">
+      <div><em>DEMO WEB · 3D INTERACTIVO</em><br><b>Vitrina de maquetas</b><span>Chancador JC-01, molino de bolas BM-01 y celdas de flotación FL-01 animados en 3D. Mejor en PC con Chrome o Edge.</span></div>
+    </a>
+  </div>
+  <footer>© 2026 Shinkaku Systems · 新核システムズ · shinkaku-systems.com</footer>
+</main>
+</body>
+</html>

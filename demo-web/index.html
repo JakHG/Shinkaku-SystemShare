@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shinkaku Systems</title>
+<meta name="description" content="Maquetas didácticas funcionales de procesos mineros e industriales: chancado, molienda y flotación. Demo local.">
+<link rel="icon" href="assets/logo_mark.png">
+<style>
+:root{
+  color-scheme:dark;
+  --navy:#00274F; --blue:#016DC0; --blue2:#3d9bff; --bg:#060d16; --bg2:#0a1624; --card:#0e1d2f; --line:#1b3452;
+  --ink:#e8f0fa; --mute:#8fa6c2; --amber:#ffb020; --green:#2fe07a; --orange:#ff7a2e;
+  --mono:ui-monospace,"Cascadia Mono","Consolas","SFMono-Regular",monospace;
+  --sans:"Segoe UI","Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+/* ---------- loader */
+#loader{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 40%,#0d2340,#03070c 70%);display:grid;place-items:center;transition:opacity .9s .2s,visibility 0s 1.1s}
+#loader.done{opacity:0;visibility:hidden}
+#loader .box{width:min(360px,80vw);text-align:center}
+#loader img{width:120px;margin:0 auto 26px;animation:pulse 1.8s ease-in-out infinite}
+#loader .bar{height:3px;background:#12263d;border-radius:3px;overflow:hidden}
+#loader .bar i{display:block;height:100%;width:4%;background:linear-gradient(90deg,var(--blue),var(--blue2));transition:width .5s;box-shadow:0 0 12px var(--blue2)}
+#loader p{margin-top:14px;color:var(--mute);font:13px var(--mono);letter-spacing:.08em}
+@keyframes pulse{50%{opacity:.55;transform:scale(.96)}}
+/* ---------- nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(60px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)!important;display:flex;align-items:center;gap:28px;padding:0 28px;background:rgba(6,13,22,.72);backdrop-filter:blur(14px);border-bottom:1px solid rgba(61,155,255,.12)}
+nav .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;font-size:15px}
+nav .brand img{height:30px}
+nav .brand small{display:block;font-weight:400;letter-spacing:.35em;color:var(--blue2);font-size:9px;margin-top:-3px}
+nav .links{display:flex;gap:4px;margin-left:auto}
+nav .links a{padding:7px 12px;border-radius:6px;font-size:14px;color:var(--mute);transition:.2s}
+nav .links a:hover{color:var(--ink);background:#10233a}
+nav .links a.act{color:#fff;background:linear-gradient(135deg,var(--navy),var(--blue))}
+@media(max-width:860px){nav .links a:not(.k){display:none}nav{padding:0 16px;gap:12px}nav .links a{padding:6px 8px;font-size:13px}#hero .copy{left:16px;right:16px}.contact{padding:28px}}
+@media(max-width:560px){nav .brand span{display:none}.num{font-size:48px}}
+/* ---------- hero */
+#hero{position:relative;height:100vh;min-height:620px;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#hero .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(6,13,22,.92) 0%,rgba(6,13,22,.55) 34%,rgba(6,13,22,0) 60%),linear-gradient(0deg,var(--bg) 0%,rgba(6,13,22,0) 22%)}
+#hero .copy{position:absolute;left:max(28px,calc(50vw - 600px));top:50%;transform:translateY(-46%);max-width:520px;z-index:3}
+.eyebrow{font:12px var(--mono);letter-spacing:.28em;color:var(--blue2);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";width:28px;height:1px;background:var(--blue2)}
+#hero h1{font-size:clamp(34px,5vw,60px);line-height:1.06;margin:18px 0 18px;font-weight:800;letter-spacing:-.01em}
+#hero h1 em{font-style:normal;background:linear-gradient(90deg,#fff,var(--blue2));-webkit-background-clip:text;background-clip:text;color:transparent}
+#hero .lead{color:#b7c7da;font-size:18px;max-width:470px}
+.cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:8px;font-weight:600;font-size:15px;border:1px solid var(--line);background:#0c1a2b;color:var(--ink);cursor:pointer;transition:.2s;font-family:inherit}
+.btn:hover{border-color:var(--blue2);transform:translateY(-1px)}
+.btn.pri{background:linear-gradient(135deg,var(--blue),#0a4f94);border-color:transparent;box-shadow:0 8px 30px rgba(1,109,192,.35)}
+.stats{display:flex;flex-wrap:wrap;gap:18px 30px;margin-top:40px}
+.stats b{display:block;font:700 26px var(--mono);color:#fff}
+.stats span{font-size:12px;color:var(--mute);letter-spacing:.04em}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font:11px var(--mono);letter-spacing:.3em;color:var(--mute);z-index:3;text-align:center}
+.scroll-hint:after{content:"";display:block;width:1px;height:34px;margin:10px auto 0;background:linear-gradient(var(--blue2),transparent);animation:drop 1.8s infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.labels{position:absolute;inset:0;pointer-events:none;z-index:2}
+.hero-tag{transition:opacity .4s,background .25s,transform .25s;pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:30px;background:rgba(8,20,34,.78);border:1px solid rgba(61,155,255,.45);backdrop-filter:blur(6px);font-size:13px;white-space:nowrap;box-shadow:0 0 22px rgba(1,109,192,.25)}
+.hero-tag b{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--blue);font:700 11px var(--mono)}
+.hero-tag em{font-style:normal;font:11px var(--mono);color:var(--blue2)}
+.hero-tag.dim{opacity:0;pointer-events:none}
+.hero-tag:hover{background:var(--blue);transform:translateY(-3px)}
+.hero-tag:hover em{color:#fff}
+/* ---------- secciones */
+section{position:relative}
+.sec{padding:84px 0 80px}
+.sec h2{font-size:clamp(28px,3.4vw,42px);line-height:1.15;margin:14px 0 16px;font-weight:800}
+.sec .sub{color:var(--mute);max-width:720px;font-size:17px}
+/* flujo de proceso */
+#proceso{background:linear-gradient(180deg,var(--bg),var(--bg2))}
+.flow{margin-top:50px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 20px 18px;overflow:hidden}
+.flow svg{width:100%;height:auto;display:block}
+.flow .pipe{fill:none;stroke:#1f4670;stroke-width:6;stroke-linecap:round}
+.flow .ore{fill:none;stroke:url(#gOre);stroke-width:4;stroke-linecap:round;stroke-dasharray:3 16;animation:flow 1.1s linear infinite}
+.flow .ore.w{stroke:url(#gWater);stroke-dasharray:2 10;animation-duration:.8s}
+@keyframes flow{to{stroke-dashoffset:-19}}
+.flow .node rect{fill:#0a1728;stroke:#2a5480;stroke-width:1.5}
+.flow .node.live rect{stroke:var(--blue2);stroke-width:2;filter:drop-shadow(0 0 10px rgba(61,155,255,.55))}
+.flow .node.soon rect{stroke-dasharray:5 5;opacity:.7}
+.flow .node text{fill:var(--ink);font-family:var(--sans);font-size:15px;font-weight:700;text-anchor:middle}
+.flow .node .c{font:11px var(--mono);fill:var(--blue2);font-weight:400}
+.flow .node .d{font-size:11.5px;fill:var(--mute);font-weight:400}
+.flow .node.live{cursor:pointer}
+.flow .node.live:hover rect{fill:#0f2640}
+.flow .spin{transform-box:fill-box;transform-origin:center;animation:rot 3s linear infinite}
+.flow .jaw{transform-box:fill-box;transform-origin:50% 0;animation:jaw .5s ease-in-out infinite alternate}
+@keyframes rot{to{transform:rotate(360deg)}}
+@keyframes jaw{to{transform:rotate(-7deg)}}
+.flow .bub{animation:bub 1.6s linear infinite}
+@keyframes bub{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-26px);opacity:0}}
+.legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--mute);padding:0 10px}
+.legend i{display:inline-block;width:22px;height:4px;border-radius:2px;margin-right:7px;vertical-align:middle}
+/* maqueta */
+.model{border-top:1px solid #0f2238}
+.model:nth-of-type(even){background:var(--bg2)}
+.mhead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.num{font:800 64px/0.8 var(--mono);color:transparent;-webkit-text-stroke:1px #2a5480;margin-bottom:6px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:20px;font:12px var(--mono);border:1px solid}
+.badge:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.badge.ok{color:var(--green);border-color:rgba(47,224,122,.35);background:rgba(47,224,122,.07)}
+.badge.rev{color:var(--amber);border-color:rgba(255,176,32,.35);background:rgba(255,176,32,.07)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;margin-top:34px}
+@media(max-width:1000px){.stage{grid-template-columns:1fr}}
+.viewer{position:relative;height:clamp(420px,62vh,640px);border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#08111c;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.viewer canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+.viewer canvas:active{cursor:grabbing}
+.viewer .hud{position:absolute;left:14px;top:14px;z-index:3;font:11px var(--mono);color:var(--mute);letter-spacing:.12em;pointer-events:none}
+.viewer .hud b{color:var(--blue2)}
+.viewer .hint{position:absolute;right:14px;top:14px;z-index:3;font:11px var(--mono);color:#5d7593;pointer-events:none}
+.hotspot{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:0;transform:translateY(-50%)}
+.hotspot i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 11px var(--mono);font-style:normal;background:rgba(1,109,192,.85);border:2px solid #cfe6ff;box-shadow:0 0 0 0 rgba(61,155,255,.7);animation:ring 2.2s infinite}
+.hotspot span{max-width:0;overflow:hidden;white-space:nowrap;font-size:12.5px;background:rgba(6,16,28,.9);border-radius:0 12px 12px 0;padding:3px 0;transition:.3s;margin-left:-4px}
+.hotspot:hover span,.hotspot.on span{max-width:260px;padding:3px 12px 3px 10px}
+.hotspot.on i{background:var(--amber);color:#111;border-color:#fff3d6;animation:none}
+@keyframes ring{70%{box-shadow:0 0 0 12px rgba(61,155,255,0)}100%{box-shadow:0 0 0 0 rgba(61,155,255,0)}}
+.hs-info{position:absolute;left:14px;bottom:14px;z-index:4;max-width:min(430px,calc(100% - 28px));padding:14px 16px;border-radius:12px;background:rgba(6,15,26,.9);border:1px solid rgba(255,176,32,.4);backdrop-filter:blur(8px);font-size:14px;opacity:0;transform:translateY(12px);transition:.35s;pointer-events:none}
+.hs-info.show{opacity:1;transform:none}
+.hs-info b{color:var(--amber);font-size:14px}
+.hs-info p{color:#c9d6e6;margin-top:6px;line-height:1.5}
+.panel{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h4{font:11px var(--mono);letter-spacing:.2em;color:var(--blue2);text-transform:uppercase;margin-bottom:10px}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px}
+.ctrl button{flex:1 1 45%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1728;color:var(--ink);font:13px var(--sans);cursor:pointer;transition:.2s}
+.ctrl button:hover{border-color:var(--blue2)}
+.ctrl button.on{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:var(--blue2)}
+.ctrl button.big{flex-basis:100%;background:linear-gradient(135deg,#0a3f75,#016DC0);border-color:transparent;font-weight:600}
+.rng{margin-top:12px}
+.rng label{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.rng label b{font-family:var(--mono);color:#fff}
+input[type=range]{width:100%;margin-top:6px;accent-color:var(--blue2)}
+.readout{font:12.5px var(--mono);color:var(--green);background:#050c14;border:1px solid #12301f;border-radius:8px;padding:9px 11px;min-height:40px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font:12px var(--mono);padding:4px 9px;border-radius:6px;background:#0a1728;border:1px solid var(--line);color:#b9cbe0}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.cols h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.cols h3:before{content:"";width:10px;height:10px;border-radius:2px;background:var(--blue);transform:rotate(45deg)}
+.cols p,.cols li{color:#aebfd3;font-size:15px}
+.cols ul{padding-left:18px}
+.cols li{margin:3px 0}
+/* tecnología */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+@media(max-width:1000px){.tiles{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.tiles{grid-template-columns:1fr}}
+.tile{background:linear-gradient(160deg,#0f2034,#0a1624);border:1px solid var(--line);border-radius:16px;padding:22px;transition:.3s;position:relative;overflow:hidden}
+.tile:hover{transform:translateY(-4px);border-color:#2f6aa3}
+.tile:after{content:"";position:absolute;right:-40px;top:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(rgba(1,109,192,.3),transparent 70%)}
+.tile svg{width:38px;height:38px;stroke:var(--blue2);fill:none;stroke-width:1.6;margin-bottom:14px}
+.tile h3{font-size:17px;margin-bottom:8px}
+.tile p{color:#9fb2c9;font-size:14.5px}
+/* galería */
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:210px;gap:12px;margin-top:40px}
+.gallery figure{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);cursor:zoom-in}
+.gallery figure.w{grid-column:span 2}
+.gallery figure.t{grid-row:span 2}
+.gallery img{width:100%;height:100%;object-fit:cover;transition:.6s}
+.gallery figure:hover img{transform:scale(1.06)}
+.gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;font-size:12.5px;background:linear-gradient(transparent,rgba(3,8,14,.9));pointer-events:none}
+@media(max-width:800px){.gallery{grid-template-columns:repeat(2,1fr)}.gallery figure.w{grid-column:span 2}}
+#lightbox{position:fixed;inset:0;z-index:90;background:rgba(2,6,10,.94);display:grid;place-items:center;opacity:0;visibility:hidden;transition:.3s;cursor:zoom-out;padding:30px}
+#lightbox.show{opacity:1;visibility:visible}
+#lightbox img{max-height:84vh;border-radius:10px;box-shadow:0 20px 80px #000}
+#lightbox p{margin-top:12px;color:var(--mute);text-align:center}
+/* próximamente */
+.soon{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+@media(max-width:900px){.soon{grid-template-columns:repeat(2,1fr)}}
+.soon div{border:1px dashed #2a4a6d;border-radius:14px;padding:20px;background:rgba(10,23,40,.5)}
+.soon b{font:12px var(--mono);color:var(--blue2)}
+.soon h3{font-size:17px;margin:6px 0}
+.soon p{font-size:14px;color:var(--mute)}
+/* contacto / footer */
+.contact{margin-top:60px;border-radius:20px;padding:44px;background:radial-gradient(circle at 85% 20%,rgba(1,109,192,.35),transparent 55%),linear-gradient(135deg,#00274F,#021629);border:1px solid #1d4c7c;display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+.contact h2{margin:0 0 8px}
+footer{border-top:1px solid #0f2238;padding:40px 0 50px;color:var(--mute);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer img{height:64px}
+.reveal{transition:transform .9s}
+.reveal.in{transform:none}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="box"><img src="assets/logo_mark.png" alt=""><div class="bar"><i></i></div><p>Iniciando planta…</p></div></div>
+
+<nav>
+  <a class="brand" href="#hero"><img src="assets/logo_mark.png" alt="Shinkaku Systems"><span>SHINKAKU<small>SYSTEMS</small></span></a>
+  <div class="links">
+    <a href="#proceso">Proceso</a>
+    <a class="k" href="#jc">Chancado</a>
+    <a class="k" href="#bm">Molienda</a>
+    <a class="k" href="#fl">Flotación</a>
+    <a href="#tecnologia">Tecnología</a>
+    <a href="#galeria">Galería</a>
+  </div>
+</nav>
+
+<!-- ======================================================= PORTADA -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="shade"></div>
+  <div class="copy">
+    <div class="eyebrow">Industrial Training Models</div>
+    <h1>La planta minera,<br><em>en tu mesa de laboratorio.</em></h1>
+    <p class="lead">Maquetas didácticas que funcionan de verdad: chancan, muelen y flotan con mecánica real, sensores, HMI y control automático. Diseñadas para universidades, institutos técnicos y centros de capacitación.</p>
+    <div class="cta">
+      <a class="btn pri" href="#jc">Explorar las maquetas →</a>
+      <a class="btn" href="#proceso">Ver el proceso</a>
+    </div>
+    <div class="stats">
+      <div><b>3</b><span>maquetas listas</span></div>
+      <div><b>24 V</b><span>seguridad SELV</span></div>
+      <div><b>Modbus</b><span>listas para PLC</span></div>
+    </div>
+  </div>
+  <div class="scroll-hint">DESLIZA</div>
+</section>
+
+<!-- ======================================================= PROCESO -->
+<section id="proceso" class="sec">
+  <div class="wrap">
+    <div class="eyebrow">Del mineral al concentrado</div>
+    <h2>Un circuito de planta concentradora, módulo a módulo</h2>
+    <p class="sub">Cada maqueta reproduce una etapa real del procesamiento de minerales. Juntas forman la línea completa: reducción de tamaño, liberación y separación. Haz clic en una etapa para ir a su maqueta.</p>
+    <div class="flow reveal">
+      <svg viewBox="0 0 1180 300" role="img" aria-label="Diagrama de flujo: mina, chancado, molienda, flotación, concentrado">
+        <defs>
+          <linearGradient id="gOre" x1="0" x2="1"><stop offset="0" stop-color="#c9a27a"/><stop offset="1" stop-color="#ffcf8a"/></linearGradient>
+          <linearGradient id="gWater" x1="0" x2="1"><stop offset="0" stop-color="#3d9bff"/><stop offset="1" stop-color="#8fd0ff"/></linearGradient>
+        </defs>
+        <!-- tuberías -->
+        <path class="pipe" d="M150 150 H222"/><path class="ore" d="M150 150 H222"/>
+        <path class="pipe" d="M398 150 H460"/><path class="ore" d="M398 150 H460"/>
+        <path class="pipe" d="M636 150 H698"/><path class="ore w" d="M636 150 H698"/>
+        <path class="pipe" d="M874 130 H940"/><path class="ore" d="M874 130 H940"/>
+        <path class="pipe" d="M874 170 C 905 170 905 250 940 250"/><path class="ore w" d="M874 170 C 905 170 905 250 940 250"/>
+        <!-- mina -->
+        <g class="node"><rect x="20" y="95" width="130" height="110" rx="12"/>
+          <path d="M45 175 L70 140 L85 155 L100 130 L125 175 Z" fill="#6b4f35" stroke="#a07a55"/>
+          <text x="85" y="195" class="d">ROM · mina</text><text x="85" y="122">Mineral</text></g>
+        <!-- chancado -->
+        <g class="node live" data-go="jc"><rect x="222" y="60" width="176" height="180" rx="14"/>
+          <text x="310" y="88" class="c">01 · JC-01</text><text x="310" y="110">Chancado</text>
+          <g transform="translate(280,125)"><path d="M0 0 L12 60 L22 60 L14 0 Z" fill="#6e8196"/><g class="jaw"><path d="M60 0 L46 60 L36 60 L48 0 Z" fill="#ff7a2e"/></g></g>
+          <text x="310" y="212" class="d">mandíbula de 4 barras</text><text x="310" y="228" class="d">roca 22 mm → 5–15 mm</text></g>
+        <!-- molienda -->
+        <g class="node live" data-go="bm"><rect x="460" y="60" width="176" height="180" rx="14"/>
+          <text x="548" y="88" class="c">02 · BM-01</text><text x="548" y="110">Molienda</text>
+          <circle cx="548" cy="158" r="32" fill="#0d2540" stroke="#3d9bff" stroke-width="2"/>
+          <g class="spin"><circle cx="548" cy="158" r="32" fill="none"/><circle cx="534" cy="176" r="5" fill="#f2efe6"/><circle cx="546" cy="181" r="5" fill="#f2efe6"/><circle cx="558" cy="178" r="5" fill="#f2efe6"/><circle cx="526" cy="164" r="5" fill="#f2efe6"/><circle cx="566" cy="168" r="5" fill="#f2efe6"/><line x1="548" y1="126" x2="548" y2="136" stroke="#3d9bff" stroke-width="3"/></g>
+          <text x="548" y="212" class="d">cascada + catarata</text><text x="548" y="228" class="d">80 rpm · 69 % Nc</text></g>
+        <!-- flotación -->
+        <g class="node live" data-go="fl"><rect x="698" y="60" width="176" height="180" rx="14"/>
+          <text x="786" y="88" class="c">03 · FL-01</text><text x="786" y="110">Flotación</text>
+          <g fill="#0f3a66" stroke="#3d9bff" stroke-width="1.2"><rect x="728" y="130" width="26" height="54" rx="2"/><rect x="760" y="130" width="26" height="54" rx="2"/><rect x="792" y="130" width="26" height="54" rx="2"/><rect x="824" y="130" width="26" height="54" rx="2"/></g>
+          <g fill="#bfe3ff"><circle class="bub" cx="741" cy="178" r="2"/><circle class="bub" cx="773" cy="178" r="2" style="animation-delay:.4s"/><circle class="bub" cx="805" cy="178" r="2" style="animation-delay:.8s"/><circle class="bub" cx="837" cy="178" r="2" style="animation-delay:1.2s"/></g>
+          <text x="786" y="212" class="d">4 celdas · aire real</text><text x="786" y="228" class="d">nivel PI · trazador</text></g>
+        <!-- concentrado / colas -->
+        <g class="node"><rect x="940" y="98" width="130" height="64" rx="12"/><text x="1005" y="126">Concentrado</text><text x="1005" y="146" class="d">rebalse</text></g>
+        <g class="node soon"><rect x="940" y="218" width="220" height="64" rx="12"/><text x="1050" y="246">Colas → MP-01</text><text x="1050" y="266" class="d">espesador · próximamente</text></g>
+      </svg>
+      <div class="legend"><span><i style="background:#e5b37f"></i>Mineral / sólidos</span><span><i style="background:#3d9bff"></i>Pulpa / agua</span><span><i style="border:1px dashed #5d7593;height:8px;width:18px"></i>En desarrollo</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= JC-01 -->
+<section id="jc" class="sec model">
+  <div class="wrap">
+    <div class="mhead">
+      <div><div class="num">01</div><div class="eyebrow">Chancado primario · JC-01</div><h2>Chancador de mandíbula</h2>
+        <p class="sub">Un mecanismo de 4 barras real (excéntrica + pitman + toggle) tritura rocas de verdad. La simulación usa exactamente la misma cinemática que el CAD.</p></div>
+      <span class="badge ok">V1.1 · aprobado</span>
+    </div>
+    <div class="stage">
+      <div class="viewer">
+        <canvas></canvas>
+        <div class="hud">VISOR 3D · <b>JC-01</b></div><div class="hint">arrastra · zoom · toca los puntos</div>
+        <div class="hs-info"></div>
+      </div>
+      <div class="panel">
+        <div class="card"><h4>Controles</h4>
+          <div class="ctrl"><button data-act="slow" class="on">Cámara lenta</button><button data-act="xray">Vista en corte</button><button data-act="mech">Ver mecanismo</button><button data-act="reset">Vista general</button></div>
+          <div class="rng"><label>Velocidad del eje excéntrico <b><span data-rng-v>300</span> rpm</b></label><input type="range" data-rng min="60" max="300" step="10" value="300"></div>
+        </div>
+        <div class="card"><h4>Lectura en vivo</h4><div class="readout">—</div></div>
+        <div class="card"><h4>Ficha</h4><div class="chips"><span>Motor DC 24 V · 100 W</span><span>Excéntrica e = 5 mm</span><span>CSS 5–15 mm</span><span>Toggle fusible 2.2 kN</span><span>Volante Ø130</span><span>Celda de carga</span><span>HMI 7" + ESP32</span></div></div>
+      </div>
+    </div>
+    <div class="cols">
+      <div><h3>Proceso real</h3><p>El chancador primario recibe el mineral de la mina (hasta 1–1.5 m) y lo reduce a ~150–250 mm. La mandíbula móvil se acerca y se aleja de la fija; la roca se fractura por compresión y baja por gravedad a medida que cabe en la abertura.</p></div>
+      <div><h3>Qué simula la maqueta</h3><ul><li>Movimiento elíptico real de la mandíbula (4 barras).</li><li>Alimentación ahogada con bandeja vibratoria controlada.</li><li>Ajuste de CSS y efecto en el tamaño del producto.</li><li>Fusible mecánico (toggle) y parada segura.</li></ul></div>
+      <div><h3>Qué aprende el alumno</h3><ul><li>Razón de reducción y curva granulométrica.</li><li>Potencia vs. alimentación: lazo de control del feeder.</li><li>Interlocks, arranque secuencial y alarmas.</li><li>Balance de masa con celda de carga.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= BM-01 -->
+<section id="bm" class="sec model">
+  <div class="wrap">
+    <div class="mhead">
+      <div><div class="num">02</div><div class="eyebrow">Molienda · BM-01</div><h2>Molino de bolas</h2>
+        <p class="sub">Tambor transparente con 650 bolas, corona y piñón reales y alimentador de sinfín. Cambia la velocidad y observa cómo la carga pasa de cascada a catarata y a centrifugado.</p></div>
+      <span class="badge ok">Rev 0.4 · concepto cerrado</span>
+    </div>
+    <div class="stage">
+      <div class="viewer">
+        <canvas></canvas>
+        <div class="hud">VISOR 3D · <b>BM-01</b></div><div class="hint">arrastra · zoom · toca los puntos</div>
+        <div class="hs-info"></div>
+      </div>
+      <div class="panel">
+        <div class="card"><h4>Controles</h4>
+          <div class="ctrl"><button data-act="slow">Cámara lenta</button><button data-act="xray">Sin guardas</button><button data-act="mech">Ver dentro del tambor</button><button data-act="reset">Vista general</button></div>
+          <div class="rng"><label>Velocidad del tambor <b><span data-rng-v>80</span> rpm</b></label><input type="range" data-rng min="10" max="125" step="1" value="80"></div>
+        </div>
+        <div class="card"><h4>Lectura en vivo</h4><div class="readout">—</div></div>
+        <div class="card"><h4>Ficha</h4><div class="chips"><span>Tambor PMMA Ø150 × 200</span><span>650 bolas POM Ø12</span><span>Nc = 116 rpm</span><span>Corona z120 · piñón z20 m1.5</span><span>Relación total 30:1</span><span>Sinfín 1.8–28 g/min</span><span>HMI 7" + ESP32</span></div></div>
+      </div>
+    </div>
+    <div class="cols">
+      <div><h3>Proceso real</h3><p>El molino de bolas reduce el producto chancado a menos de ~0.2 mm para liberar las partículas de mineral valioso. Las bolas de acero suben con la pared del tambor y caen sobre la carga: impacto y abrasión.</p></div>
+      <div><h3>Qué simula la maqueta</h3><ul><li>Régimen de la carga según % de velocidad crítica (Nc = 42.3/√D).</li><li>Tren de accionamiento real: motor → reductor → piñón → corona.</li><li>Dosificación continua con sinfín y descarga por parrilla.</li><li>Prealarma de arranque, rampas y guardas enclavadas.</li></ul></div>
+      <div><h3>Qué aprende el alumno</h3><ul><li>Velocidad crítica y punto de despegue: cos ψ = ω²r/g.</li><li>Cálculo de engranajes y potencia de molienda.</li><li>Control de velocidad con VFD/driver y HMI.</li><li>Tiempo de residencia y balance de masa.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= FL-01 -->
+<section id="fl" class="sec model">
+  <div class="wrap">
+    <div class="mhead">
+      <div><div class="num">03</div><div class="eyebrow">Flotación · FL-01</div><h2>Banco de celdas de flotación</h2>
+        <p class="sub">Cuatro celdas transparentes que funcionan sólo con agua: rotores girando, aire real con burbujas, nivel controlado por un PI con válvula dardo y un pulso de colorante que recorre el banco.</p></div>
+      <span class="badge rev">V1.1 · versión agua · en revisión</span>
+    </div>
+    <div class="stage">
+      <div class="viewer">
+        <canvas></canvas>
+        <div class="hud">VISOR 3D · <b>FL-01</b></div><div class="hint">arrastra · zoom · toca los puntos</div>
+        <div class="hs-info"></div>
+      </div>
+      <div class="panel">
+        <div class="card"><h4>Controles</h4>
+          <div class="ctrl"><button data-act="pulse" class="big">💧 Inyectar pulso de colorante</button><button data-act="slow" class="on">Cámara lenta</button><button data-act="xray">Sin tapa</button><button data-act="mech">Ver una celda</button><button data-act="reset">Vista general</button></div>
+          <div class="rng"><label>Aire por celda <b><span data-rng-v>4.0</span> L/min</b></label><input type="range" data-rng min="0" max="7" step="0.5" value="4"></div>
+        </div>
+        <div class="card"><h4>Lectura en vivo</h4><div class="readout">—</div></div>
+        <div class="card"><h4>Ficha</h4><div class="chips"><span>4 celdas PMMA 100×120</span><span>Rotor Ø46 · 900–1800 rpm</span><span>Aire 1–7 L/min/celda</span><span>LIC-101 PI + dardo</span><span>Colorímetro AT-101</span><span>Circuito cerrado 12.5 L</span><span>Sólo agua</span></div></div>
+      </div>
+    </div>
+    <div class="cols">
+      <div><h3>Proceso real</h3><p>En la flotación, burbujas de aire atrapan las partículas de mineral valioso (hidrofóbicas) y las llevan a la espuma, que rebalsa como concentrado. Las colas pasan de celda en celda. El nivel de pulpa es la variable de control principal.</p></div>
+      <div><h3>Qué simula la maqueta</h3><ul><li>Hidráulica real del banco: rebalse, colas y válvula dardo.</li><li>Hold-up de aire: el agua sube al aumentar el aire.</li><li>Tanques en serie con trazador de colorante (curva RTD).</li><li>Sin reactivos ni espuma: limpio y seguro para el aula.</li></ul></div>
+      <div><h3>Qué aprende el alumno</h3><ul><li>Control de nivel de un proceso integrador (sintonía PI).</li><li>Tiempo de residencia τ = V/Q y mezcla perfecta.</li><li>Instrumentación: flotador, láser, rotámetros, colorímetro.</li><li>Alarmas, enclavamientos de tapa y parada de emergencia.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= TECNOLOGÍA -->
+<section id="tecnologia" class="sec">
+  <div class="wrap">
+    <div class="eyebrow">Plataforma común</div>
+    <h2>Ingeniería real, a escala de aula</h2>
+    <p class="sub">Todas las maquetas comparten la misma arquitectura: se aprende una vez y se aplica en toda la línea.</p>
+    <div class="tiles">
+      <div class="tile reveal"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4"/><path d="M20 4v5M20 31v5M4 20h5M31 20h5M8.7 8.7l3.5 3.5M27.8 27.8l3.5 3.5M8.7 31.3l3.5-3.5M27.8 12.2l3.5-3.5"/></svg><h3>Mecánica real</h3><p>Rodamientos, ejes, engranajes calculados y acoplamientos reales. CAD paramétrico, cero interferencias verificadas y piezas impresas en 3D.</p></div>
+      <div class="tile reveal"><svg viewBox="0 0 40 40"><rect x="5" y="8" width="30" height="20" rx="2"/><path d="M14 34h12M20 28v6M10 22l5-6 4 3 6-7 5 4"/></svg><h3>Control y HMI</h3><p>ESP32 + HMI táctil 7": modo manual y automático, secuencias, alarmas e interlocks. Modbus RTU/TCP para conectar un PLC Mitsubishi, Siemens u otro.</p></div>
+      <div class="tile reveal"><svg viewBox="0 0 40 40"><path d="M20 4l13 5v10c0 9-6 14-13 17C13 33 7 28 7 19V9z"/><path d="M14 20l4 4 8-8"/></svg><h3>Seguridad primero</h3><p>24 V DC SELV, guardas enclavadas, parada de emergencia de doble canal, baliza y electrónica fuera de la zona húmeda.</p></div>
+      <div class="tile reveal"><svg viewBox="0 0 40 40"><path d="M20 4l14 8v16l-14 8-14-8V12z"/><path d="M6 12l14 8 14-8M20 20v16"/></svg><h3>Gemelo digital</h3><p>Cada maqueta tiene su modelo 3D animado con la misma física del equipo: para clases remotas, preparación de laboratorios y esta web.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= GALERÍA -->
+<section id="galeria" class="sec" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="eyebrow">Renders de ingeniería</div>
+    <h2>Galería</h2>
+    <p class="sub">Imágenes renderizadas directamente desde el modelo CAD de cada maqueta.</p>
+    <div class="gallery">
+      <figure class="w t"><img src="assets/bm01_hero.jpg" alt="BM-01 · Molino de bolas — vista general" loading="lazy"><figcaption>BM-01 · Molino de bolas</figcaption></figure>
+      <figure class="w"><img src="assets/fl01_hero.jpg" alt="FL-01 · Banco de celdas de flotación — versión agua" loading="lazy"><figcaption>FL-01 · Banco de celdas</figcaption></figure>
+      <figure><img src="assets/jc01_hero.jpg" alt="JC-01 · Chancador de mandíbula" loading="lazy"><figcaption>JC-01 · Chancador</figcaption></figure>
+      <figure><img src="assets/fl01_cell.jpg" alt="FL-01 · Rotor, estator y burbujas en una celda" loading="lazy"><figcaption>FL-01 · Rotor y burbujas</figcaption></figure>
+      <figure class="w"><img src="assets/fl01_tracer.jpg" alt="FL-01 · Secuencia del pulso de colorante avanzando por las celdas" loading="lazy"><figcaption>FL-01 · Ensayo de trazador</figcaption></figure>
+      <figure><img src="assets/bm01_feed.jpg" alt="BM-01 · Detalle del alimentador de sinfín" loading="lazy"><figcaption>BM-01 · Alimentador</figcaption></figure>
+      <figure><img src="assets/jc01_mech.jpg" alt="JC-01 · Secuencia del mecanismo de 4 barras" loading="lazy"><figcaption>JC-01 · Mecanismo</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= PRÓXIMAMENTE -->
+<section id="proximamente" class="sec">
+  <div class="wrap">
+    <div class="eyebrow">Hoja de ruta</div>
+    <h2>Próximas maquetas</h2>
+    <div class="soon">
+      <div><b>CV-01</b><h3>Cinta transportadora</h3><p>Pesómetro, detector de desalineamiento, pull-cord y arranque secuencial.</p></div>
+      <div><b>LT-01</b><h3>Control de nivel de tanques</h3><p>Tanques acoplados, lazos PID y sintonía en cascada.</p></div>
+      <div><b>CP-01</b><h3>Entrenador de procesos químicos</h3><p>Dosificación, pH, temperatura y mezcla en línea.</p></div>
+      <div><b>MP-01</b><h3>Planta modular completa</h3><p>Espesador y la línea integrada con SCADA.</p></div>
+    </div>
+    <div class="contact">
+      <div><h2>¿Tu institución necesita un laboratorio de procesos?</h2><p style="color:#b7c7da">Maquetas a medida, capacitación y material docente en español, inglés y japonés.</p></div>
+      <a class="btn pri" href="https://shinkaku-systems.com" target="_blank" rel="noopener">shinkaku-systems.com →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/logo_dark.png" alt="Shinkaku Systems 新核システムズ">
+    <div style="text-align:right">© 2026 Shinkaku Systems · 新核システムズ<br><span class="mono" style="font-size:12px">Demo local · modelos 3D generados desde el CAD de ingeniería</span></div>
+  </div>
+</footer>
+
+<div id="lightbox"><div><img alt=""><p></p></div></div>
+
+<script>
+// pequeñas interacciones que no dependen de WebGL
+document.querySelectorAll('.flow .node[data-go]').forEach(function (n) { n.addEventListener('click', function () { document.getElementById(n.dataset.go).scrollIntoView({ behavior: 'smooth' }); }); });
+var ro = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } }); }, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(function (el, i) { el.style.transitionDelay = (i % 4) * 0.08 + 's'; ro.observe(el); });
+</script>
+<script src="models.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
